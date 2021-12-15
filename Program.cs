@@ -3,6 +3,7 @@ using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 
 namespace SQLServerToDBML
@@ -49,9 +50,22 @@ namespace SQLServerToDBML
             }
         }
 
-        private DBMLDatabase ProcessRaw(List<RawTable> rawData){
+        private DBMLDatabase ProcessRaw(List<RawTable> rawData, string DatabaseName){
             var retval = new DBMLDatabase();
+            retval.DatabaseName = DatabaseName;
+            
+            var tableList = new HashSet<string>();
+            // two passes sucks but let's start there because it's easy
+            foreach(var rawRow in rawData){
+                if(!tableList.Contains(rawRow.tableName)){
+                    tableList.Add(rawRow.tableName);
+                }
+            }
 
+            foreach(var tableName in tableList){
+                //TODO:  Re-learn LINQ to query the raw data and pull columns for each table in the loop
+            }
+            
             return retval;
         }
         private string ConvertToDBML(DBMLDatabase database)
@@ -74,8 +88,8 @@ namespace SQLServerToDBML
 
         }
 
-        private void SaveDBMLFile(string filePath){
-            // TODO:  save the file
+        private void SaveDBMLFile(string filePath, string dbmlString){
+            File.WriteAllText(filePath, dbmlString);
         }
 
     }
