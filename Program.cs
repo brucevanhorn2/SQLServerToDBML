@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 namespace SQLServerToDBML
 {
@@ -8,24 +8,32 @@ namespace SQLServerToDBML
     {
         static void Main(string[] args)
         {
-            // simple args for now.  make them better later.
-            var databaseHost = args[0];
-            var databaseUser = args[1];
-            var databasePassword = args[2];
-            var databaseName = args[3];
-
-            // TODO:  connect to db
-
-            var connectionString = "Data Source=" + databaseHost + "; Initial Catalog=" + databaseName + "; User ID=" + databaseUser + "; Password=" + databasePassword;
-            using(var con = new SqlConnection(connectionString)){
-                using(var cmd = new SqlCommand()){
-                    cmd.connection = con;
-                    //cmd.commandType="I forget - look it up when I get home";
+            
+            var connectionString = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTION_STRING");
+            using (var con = new SqlConnection(connectionString))
+            {
+                using (var cmd = new SqlCommand())
+                {
+                    cmd.Connection = con;
+                    cmd.CommandType = CommandType.Text;
+                    var sql = @"SELECT 
+                                    T.name AS table_name ,
+                                    C.name AS column_name ,
+                                    P.name AS data_type ,
+                                    P.max_length AS size ,
+                                    CAST(P.precision AS VARCHAR) + '/' + CAST(P.scale AS VARCHAR) AS precision_scale
+                                FROM   sys.objects AS T
+                                    JOIN sys.columns AS C ON T.object_id = C.object_id
+                                    JOIN sys.types AS P ON C.system_type_id = P.system_type_id
+                                WHERE  T.type_desc = 'USER_TABLE';";
+                    cmd.CommandText = sql;
                     con.Open();
-                    using(var reader = cmd.ExecuteReader()){
-                        while(reader.Read())
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
                         {
-                            System.Console.WriteLine("Booyah");
+                            var tableName = reader.GetValue(reader.GetOrdinal("table_name")).ToString();
+                            System.Console.WriteLine(tableName);
                         }
                     }
                 }
@@ -37,6 +45,6 @@ namespace SQLServerToDBML
             // TODO:  save the file
         }
 
-        
+
     }
 }
