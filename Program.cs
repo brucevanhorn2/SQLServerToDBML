@@ -6,11 +6,11 @@ using System.Collections.Generic;
 
 namespace SQLServerToDBML
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
-            
+
             var connectionString = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTION_STRING");
             List<RawTable> rawTableData = new List<RawTable>();
             using (var con = new SqlConnection(connectionString))
@@ -31,7 +31,7 @@ namespace SQLServerToDBML
                                 WHERE  T.type_desc = 'USER_TABLE';";
                     cmd.CommandText = sql;
                     con.Open();
-                    
+
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -46,13 +46,18 @@ namespace SQLServerToDBML
                     }
                 }
             }
-            // TODO:  get a list of tables
+        }
 
+        private void ConvertRawToDBML()
+        {
             // TODO: generage markdown for each table
 
+        }
+
+        private void SaveDBMLFile(string filePath){
             // TODO:  save the file
         }
 
-
     }
+
 }
