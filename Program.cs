@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Data;
 using Microsoft.Data.SqlClient;
+using System.Collections.Generic;
+
 
 namespace SQLServerToDBML
 {
@@ -10,6 +12,7 @@ namespace SQLServerToDBML
         {
             
             var connectionString = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTION_STRING");
+            List<RawTable> rawTableData = new List<RawTable>();
             using (var con = new SqlConnection(connectionString))
             {
                 using (var cmd = new SqlCommand())
@@ -28,12 +31,17 @@ namespace SQLServerToDBML
                                 WHERE  T.type_desc = 'USER_TABLE';";
                     cmd.CommandText = sql;
                     con.Open();
+                    
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
                             var tableName = reader.GetValue(reader.GetOrdinal("table_name")).ToString();
-                            System.Console.WriteLine(tableName);
+                            var columnName = reader.GetValue(reader.GetOrdinal("column_name")).ToString();
+                            var dataType = reader.GetValue(reader.GetOrdinal("data_type")).ToString();
+                            var size = int.Parse(reader.GetValue(reader.GetOrdinal("size")).ToString());
+                            var precision = float.Parse(reader.GetValue(reader.GetOrdinal("precision_scale")).ToString());
+                            rawTableData.Add(new RawTable(tableName, columnName, dataType, size, precision));
                         }
                     }
                 }
