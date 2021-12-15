@@ -2,6 +2,7 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
+using System.Text;
 
 
 namespace SQLServerToDBML
@@ -48,9 +49,28 @@ namespace SQLServerToDBML
             }
         }
 
-        private void ConvertRawToDBML()
+        private DBMLDatabase ProcessRaw(List<RawTable> rawData){
+            var retval = new DBMLDatabase();
+
+            return retval;
+        }
+        private string ConvertToDBML(DBMLDatabase database)
         {
+            var output = new StringBuilder("//Table Definitions for " + database.DatabaseName);
             // TODO: generage markdown for each table
+            foreach(var table in database.Tables){
+                output.AppendLine("Table " + table.Name + "{");
+                foreach(var column in table.Columns){
+                    output.AppendLine("\t" + column.ColumnName + " " + column.Type);
+                    if (column.IsPrimaryKey){
+                        output.Append(" [pk]");
+                    }
+                }
+                output.AppendLine("}");
+
+            }
+
+            return output.ToString();
 
         }
 
