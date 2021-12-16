@@ -11,5 +11,9 @@ namespace SQLServerToDBML
         public DBMLTable(){
             Columns = new List<DBMLColumn>();
         }
+
+        public void AddColumn(DBMLColumn table){
+            Columns.Add(table);
+        }
     }
 }   

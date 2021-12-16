@@ -4,6 +4,7 @@ using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Linq;
 
 
 namespace SQLServerToDBML
@@ -63,7 +64,17 @@ namespace SQLServerToDBML
             }
 
             foreach(var tableName in tableList){
-                //TODO:  Re-learn LINQ to query the raw data and pull columns for each table in the loop
+                var subList = rawData.Where(t => t.tableName == tableName);
+                var convertedTable = new DBMLTable();
+                convertedTable.Name = tableName;
+                foreach(var item in subList){
+                    var convertedColumn = new DBMLColumn();
+                    convertedColumn.ColumnName = item.columnName;
+                    convertedColumn.Type = item.dataType;
+                    convertedColumn.MaxSize = item.maxLength;
+
+                    convertedTable.AddColumn(convertedColumn);
+                }
             }
             
             return retval;
