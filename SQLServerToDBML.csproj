@@ -2,8 +2,14 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
+    <StartupObject>SQLServerToDBML.Program</StartupObject>
+    <ApplicationIcon>chat_database_messages_db_server_icon_179436.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="chat_database_messages_db_server_icon_179436.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="4.0.0" />
